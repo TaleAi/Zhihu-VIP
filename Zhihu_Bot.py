@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -91,8 +92,7 @@ class Bot:
 
     # Scroll to an element and click
     def scroll_and_click(self, element):
-        driver.execute_script(
-            "arguments[0].scrollIntoView();", element)
+        driver.execute_script("arguments[0].scrollIntoView();", element)
         element.click()
 
     # Secondary function
@@ -131,8 +131,23 @@ class Bot:
             print('Finished %d chapters\n' % cnt)
 
     # Main function
-    def run(self):
-        return
+    def run(self, start=0, finish=0):
+        list = driver.find_element(
+            by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[1]/div')
+        for i in range(start, finish):
+            print('Getting book %d...' % i)
+            item = list.find_elements(by=By.TAG_NAME, value='a')[i]
+            # Scroll to update infinite list
+            driver.execute_script("arguments[0].scrollIntoView();", item)
+            # Open and switch to new tab
+            driver.find_element(by=By.TAG_NAME,value='body').send_keys(Keys.COMMAND + 't') 
+            driver.switch_to.window(driver.window_handles[-1])
+            driver.get(item.get_attribute('href'))
+            # Get book
+            self.get_book()
+            # Close tab and switch back
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
 
 
 driver = webdriver.Chrome(service=Service(
