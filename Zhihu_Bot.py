@@ -50,7 +50,17 @@ class Bot:
             file.write('\n\n\n## 简介')
             self.write_contents(file, driver.find_element(
                 by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div[1]/div[1]/div'))
+            # Table of contents (to be appended)
+            file.write('\n\n\n## 目录')
             print('Info done')
+        finally:
+            file.close()
+
+    # Append to table of contents in info page
+    def append_toc(self, title, filename):
+        file = open(self.dir + 'info.md', 'a')
+        try:
+            file.write('\n- [%s](%s)' % (title, filename))
         finally:
             file.close()
 
@@ -61,10 +71,14 @@ class Bot:
             by=By.XPATH, value='//*[@id="app"]/div/h1').get_attribute('innerText'))
         file = None
         # In case title is an invalid filename
+        filename = '%s.md' % title
         try:
-            file = open(self.dir + '%s.md' % title, 'w')
+            file = open(self.dir + filename, 'w')
         except:
-            file = open(self.dir + '%d.md' % cnt, 'w')
+            filename = '%d.md' % cnt
+            file = open(self.dir + filename, 'w')
+        finally:
+            self.append_toc(title, filename)
         try:
             # Write title
             file.write('## %s' % title)
@@ -119,7 +133,6 @@ class Bot:
     # Main function
     def run(self):
         return
-            
 
 
 driver = webdriver.Chrome(service=Service(
