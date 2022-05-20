@@ -12,17 +12,19 @@ from os import mkdir
 
 class Bot:
     url = 'https://www.zhihu.com/'
+    dir = './'
     timeout = 10
 
     # Write contents by paragraph within a div
     def write_contents(self, file, frame):
         sections = frame.find_elements(by=By.XPATH, value='./*')
         for section in sections:
-            if section.get_attribute('tag') == 'figure':
-                # Extract image
-                section = section.find_element(by=By.XPATH, value='./img')
-            file.write('\n%s' % markdownify(
-                section.get_attribute('outerHTML')))
+            if section.get_attribute('tagName') == 'FIGURE':
+                file.write('\n\n![%s](%s)' % ('img', section.find_element(
+                    by=By.XPATH, value='./img').get_attribute('data-src')))
+            else:
+                file.write('\n%s' % markdownify(
+                    section.get_attribute('outerHTML')))
 
     # Craft info page
     def get_info(self):
@@ -33,7 +35,7 @@ class Bot:
                 by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div/div/span[2]').click()
             # Title
             file.write('# %s' % driver.find_element(
-                by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[2]').get_attribute('innerText'))
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[last()]').get_attribute('innerText'))
             # Author
             file.write('\n\n### 作者：%s' % driver.find_element(
                 by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[2]').get_attribute('innerText'))
@@ -93,13 +95,14 @@ class Bot:
     # Scroll to an element and click
     def scroll_and_click(self, element):
         driver.execute_script("arguments[0].scrollIntoView();", element)
-        element.click()
+        WebDriverWait(driver, self.timeout).until(
+            EC.element_to_be_clickable(element)).click()
 
     # Secondary function
     def get_book(self):
         # Set book directory
         self.dir = './contents/%s/' % driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[2]').get_attribute('innerText')
+            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[last()]').get_attribute('innerText')
         try:
             mkdir(self.dir)
         except:
@@ -111,9 +114,13 @@ class Bot:
         # Create content documents
         cnt = 0
         try:
-            # Go to chapter 1
-            self.scroll_and_click(driver.find_element(
-                by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[3]/div[1]'))
+            # Go to chapter 1 (can be either first or second div)
+            try:
+                self.scroll_and_click(driver.find_element(
+                    by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[3]/div[1]'))
+            except:
+                self.scroll_and_click(driver.find_element(
+                    by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[3]/div[2]'))
             WebDriverWait(driver, self.timeout).until(EC.staleness_of(old))
             # Loop until inner try fails (no more chapters)
             while True:
@@ -135,7 +142,7 @@ class Bot:
         list = driver.find_element(
             by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[1]/div')
         for i in range(start, finish):
-            print('Getting book %d...' % i+1)
+            print('Getting book %d...' % (i+1))
             item = list.find_elements(by=By.TAG_NAME, value='a')[i]
             # Scroll to update infinite list
             driver.execute_script("arguments[0].scrollIntoView();", item)
