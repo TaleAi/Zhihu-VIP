@@ -4,85 +4,124 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from markdownify import markdownify
+from datetime import date
+from uuid import uuid4
+from os import mkdir
 
 
 class Bot:
     url = 'https://www.zhihu.com/'
-    dir = './'
+    timeout = 10
 
-    def __init__(self, browser):
-        self.driver = browser
-
+    # Write contents by paragraph within a div
     def write_contents(self, file, frame):
         sections = frame.find_elements(by=By.XPATH, value='./*')
         for section in sections:
             if section.get_attribute('tag') == 'figure':
+                # Extract image
                 section = section.find_element(by=By.XPATH, value='./img')
             file.write('\n%s' % markdownify(
                 section.get_attribute('outerHTML')))
 
+    # Craft info page
     def get_info(self):
-        # Expand Description
-        self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div/div/span[2]').click()
-        # Title
-        self.file.write('### %s' % self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[2]').get_attribute('innerText'))
-        # Author
-        self.file.write('\n\n###### 作者：%s' % self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[2]').get_attribute('innerText'))
-        # Genre
-        self.file.write('\n\n###### 分类：%s' % self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]').get_attribute('innerText'))
-        # Status
-        self.file.write('\n\n###### 状态：%s' % self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[2]/div[1]').get_attribute('innerText'))
-        # Description
-        self.file.write('\n\n\n#### 简介')
-        self.write_contents(self.file, self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div[1]/div[1]/div'))
-        print('Info done')
+        file = open(self.dir + 'info.md', 'w')
+        try:
+            # Expand Description
+            driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div/div/span[2]').click()
+            # Title
+            file.write('# %s' % driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[2]').get_attribute('innerText'))
+            # Author
+            file.write('\n\n### 作者：%s' % driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[2]').get_attribute('innerText'))
+            # Genre
+            file.write('\n\n### 分类：%s' % driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[3]').get_attribute('innerText'))
+            # Status
+            file.write('\n\n### 状态：%s' % driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[2]/div[1]').get_attribute('innerText'))
+            # Date
+            file.write('\n\n### 存档日期：%s' % date.today().strftime("%Y-%m-%d"))
+            # URL
+            file.write('\n\n### 原始地址：%s' % driver.current_url)
+            # Description
+            file.write('\n\n\n## 简介')
+            self.write_contents(file, driver.find_element(
+                by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[1]/div/div/div/div[2]/div[1]/div[1]/div'))
+            print('Info done')
+        finally:
+            file.close()
 
+    # Create chapter document
     def get_chapter(self, cnt):
         # Title
-        self.file.write('\n\n\n#### %d.%s' % (cnt, self.driver.find_element(
-            by=By.XPATH, value='//*[@id="app"]/div/h1').get_attribute('innerText')))
-        # Contents
-        self.write_contents(self.file, self.driver.find_element(
-            by=By.ID, value='manuscript'))
-        print('Chapter %d done' % cnt)
+        title = '%d %s' % (cnt, driver.find_element(
+            by=By.XPATH, value='//*[@id="app"]/div/h1').get_attribute('innerText'))
+        file = None
+        # In case title is an invalid filename
+        try:
+            file = open(self.dir + '%s.md' % title, 'w')
+        except:
+            file = open(self.dir + '%d.md' % cnt, 'w')
+        try:
+            # Write title
+            file.write('## %s' % title)
+            # Write contents
+            self.write_contents(file, driver.find_element(
+                by=By.ID, value='manuscript'))
+            print('Chapter %d finished' % cnt)
+        finally:
+            file.close()
 
+    # Scroll to an element and click
     def scroll_and_click(self, element):
-        self.driver.execute_script(
+        driver.execute_script(
             "arguments[0].scrollIntoView();", element)
         element.click()
 
-    def run(self):
-        self.file = open(self.dir + 'test.md', 'w')
+    # Secondary function
+    def get_book(self):
+        # Set book directory
+        self.dir = './contents/%s/' % driver.find_element(
+            by=By.XPATH, value='//*[@id="app"]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/span[2]').get_attribute('innerText')
+        try:
+            mkdir(self.dir)
+        except:
+            self.dir = './contents/%s/' % uuid4().hex
+            mkdir(self.dir)
+        # Craft info page
+        old = driver.find_element(by=By.TAG_NAME, value='html')
+        self.get_info()
+        # Create content documents
         cnt = 0
         try:
-            old = self.driver.find_element(by=By.TAG_NAME, value='html')
-            self.get_info()
             # Go to chapter 1
-            self.scroll_and_click(self.driver.find_element(
+            self.scroll_and_click(driver.find_element(
                 by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[2]/div[2]/div[3]/div/div[3]/div[1]'))
-            WebDriverWait(self.driver, 10).until(EC.staleness_of(old))
+            WebDriverWait(driver, self.timeout).until(EC.staleness_of(old))
+            # Loop until inner try fails (no more chapters)
             while True:
-                old = self.driver.find_element(by=By.TAG_NAME, value='html')
+                old = driver.find_element(by=By.TAG_NAME, value='html')
+                self.get_chapter(cnt+1)
                 cnt += 1
-                self.get_chapter(cnt)
                 # Go to next chapter
                 try:
-                    self.scroll_and_click(self.driver.find_element(
+                    self.scroll_and_click(driver.find_element(
                         by=By.XPATH, value='//*[@id="webNextSection"]/div[1]/span'))
                 except:
                     break
-                WebDriverWait(self.driver, 10).until(EC.staleness_of(old))
+                WebDriverWait(driver, self.timeout).until(EC.staleness_of(old))
         finally:
-            print('Finished %d chapters' % cnt)
-            self.file.close()
+            print('Finished %d chapters\n' % cnt)
+
+    # Main function
+    def run(self):
+        return
+            
 
 
-browser = webdriver.Chrome(service=Service(
+driver = webdriver.Chrome(service=Service(
     executable_path="chromedriver"))
-browser.get(Bot.url)
+driver.get(Bot.url)
