@@ -67,7 +67,7 @@ class Bot:
     # Create chapter document
     def get_chapter(self, cnt):
         # Title
-        title = '%d %s' % (cnt, driver.find_element(
+        title = '%d.%s' % (cnt, driver.find_element(
             by=By.XPATH, value='//*[@id="app"]/div/h1').get_attribute('innerText'))
         file = None
         # In case title is an invalid filename
