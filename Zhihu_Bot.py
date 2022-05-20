@@ -135,14 +135,14 @@ class Bot:
         list = driver.find_element(
             by=By.XPATH, value='//*[@id="app"]/div[2]/div[2]/div[1]/div')
         for i in range(start, finish):
-            print('Getting book %d...' % i)
+            print('Getting book %d...' % i+1)
             item = list.find_elements(by=By.TAG_NAME, value='a')[i]
             # Scroll to update infinite list
             driver.execute_script("arguments[0].scrollIntoView();", item)
             # Open and switch to new tab
-            driver.find_element(by=By.TAG_NAME,value='body').send_keys(Keys.COMMAND + 't') 
+            driver.execute_script("window.open('%s');" %
+                                  item.get_attribute('href'))
             driver.switch_to.window(driver.window_handles[-1])
-            driver.get(item.get_attribute('href'))
             # Get book
             self.get_book()
             # Close tab and switch back
