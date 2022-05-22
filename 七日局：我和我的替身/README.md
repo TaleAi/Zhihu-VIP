@@ -39,8 +39,8 @@
 结果跟到了墓地后发现人不见了，吓得他大半夜在给我发信息......
 
 
-![img](None)
-  
+![img](https://pic4.zhimg.com/v2-f5fefa31bde93757a75275b0924a7d8d.png)
+
 
 
 

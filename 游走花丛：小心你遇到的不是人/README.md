@@ -27,8 +27,8 @@
 ——《天花板的人形黑渍》
 
 
-![img](None)
-  
+![img](https://pic3.zhimg.com/v2-87f696450a894dc6a996847ed6f3b6cb.jpg?source=6a64a727)
+
 
 
 

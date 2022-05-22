@@ -15,18 +15,22 @@
 这里有千奇百怪的故事；台湾大叔亲切的口音；好听且冷门的音乐。你会听到中西方经典、伟大小说，经典电影，以及骆以军的个人真实故事。这家「故事便利店」不教你写作、表达的套路，也不会制式地告诉你如何成为一名小说家，我们展示故事原本的魅力。不说教，只陪伴。
 
 
+
+
+
+
+
+![img](https://pic4.zhimg.com/v2-e97e7c978de798c9c41255a5debfa763.png)
+
+![img](https://pic3.zhimg.com/v2-c035594a3912b2d17a8bf775672f78aa.png)
+
+![img](https://pic3.zhimg.com/v2-399486259f855584e1bd5740353383e1.png)
+
+![img](https://pic2.zhimg.com/v2-bc5a0fe1f0639f3d90339f728727235f.png)
+
+![img](https://pic4.zhimg.com/v2-ffe8003eb15b1717bb6f27a9c00aff5b.png)
+
   
-
-
-
-
-![img](None)
-![img](None)
-![img](None)
-![img](None)
-![img](None)
-  
-
 
 
 
