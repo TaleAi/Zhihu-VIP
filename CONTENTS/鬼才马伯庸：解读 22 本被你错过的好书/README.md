@@ -6,7 +6,7 @@
 
 ### 状态：已完结，共 42 节
 
-### 存档日期：2022-05-21
+### 存档日期：2022-07-02
 
 ### 原始地址：https://www.zhihu.com/remix/albums/1090001284794470400
 
@@ -15,7 +15,7 @@
 鬼才马亲王，从 20 年阅读经验中，亲选 22 本隐世好书，一口气解锁 4 大有聊源泉，帮你收获与众不同的历史观和无极限的脑洞，让无聊的生活滚蛋。
 
 
-
+  
 
 
 
@@ -33,7 +33,6 @@
 ![img](http://zhstatic.zhihu.com/knowledge-market/albums/maboyong6.jpg)
 
 ![img](http://zhstatic.zhihu.com/knowledge-market/albums/maboyong7.jpg)
-
 
 
 
