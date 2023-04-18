@@ -2,13 +2,52 @@
 
 import os
 
-def get_number(dir):
+def get_info(dir):
     with open(f'{dir}/README.md', 'r') as file:
       lines = file.readlines()
     # Compare status
     status = lines[6][7:-1]
     end = status.find('节')
-    return int(status[6:end-1])
+    # URL
+    url = lines[10][9:-1]
+    return int(status[6:end-1]), url
+
+def clean(dir):
+    with open(f'{dir}/README.md', 'r') as file:
+      lines = file.readlines()
+    
+    try:
+      os.mkdir(f'{dir}/.temp')
+      os.rename(f'{dir}/README.md', f'{dir}/.temp/README.md')
+
+      for i in range(len(lines)-1, 0, -1):
+        line = lines[i]
+        if line.startswith('## 目录'):
+            break
+        end = line.index(')<!--')
+        if end < 0:
+          end = -2 if line[-1]=='\n' else -1
+        filename = line[line.index('](')+2:end].replace('%20', ' ')
+        os.rename(f'{dir}/{filename}', f'{dir}/.temp/{filename}')
+      print(f'{len(os.listdir(f"{dir}/.temp"))-1} files filtered.')
+      for filename in os.listdir(f'{dir}'):
+        if filename.endswith('.md'):
+          os.remove(f'{dir}/{filename}')
+      print('Cleaned.')
+    except Exception as e:
+      print(e)
+    finally:
+      for filename in os.listdir(f'{dir}/.temp'):
+        os.rename(f'{dir}/.temp/{filename}', f'{dir}/{filename}')
+      os.rmdir(f'{dir}/.temp')
+    
+def handle(dir, url):
+    os.system(f"open '{dir}'")
+    print(dir)
+    print(url)
+    if input('Clean? (y/n) ') == 'y':
+      clean(dir)
+    input('Press Enter to continue...')
 
 # Define the directory path and the dictionary containing the expected number of files in each folder
 dir_path = "../CONTENTS"
@@ -25,12 +64,13 @@ for folder_name in os.listdir(dir_path):
           pass
         # Count the number of files in the folder
         file_count = len(os.listdir(folder_path))
+        count, url = get_info(folder_path)
 
         try:
           # Check if the actual number of files matches the expected number
-            if file_count != get_number(folder_path) + 1:
-              os.system(f"open '{folder_path}'")
-              exit()
+            if file_count != count + 1:
+              print(f'Record: {count}; Actual: {file_count}')
+              raise Exception()
         except:
-            os.system(f"open '{folder_path}'")
-            exit()
+            handle(folder_path, url)
+print('Check complete.')
