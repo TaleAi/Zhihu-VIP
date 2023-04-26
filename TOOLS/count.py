@@ -24,7 +24,7 @@ def clean(dir):
         line = lines[i]
         if line.startswith('## 目录'):
             break
-        end = line.index(')<!--')
+        end = line.find(')<!--')
         if end < 0:
           end = -2 if line[-1]=='\n' else -1
         filename = line[line.index('](')+2:end].replace('%20', ' ')
@@ -34,8 +34,6 @@ def clean(dir):
         if filename.endswith('.md'):
           os.remove(f'{dir}/{filename}')
       print('Cleaned.')
-    except Exception as e:
-      print(e)
     finally:
       for filename in os.listdir(f'{dir}/.temp'):
         os.rename(f'{dir}/.temp/{filename}', f'{dir}/{filename}')
@@ -47,7 +45,7 @@ def handle(dir, url):
     print(url)
     if input('Clean? (y/n) ') == 'y':
       clean(dir)
-    input('Press Enter to continue...')
+      input('Press Enter to continue...')
 
 # Define the directory path and the dictionary containing the expected number of files in each folder
 dir_path = "../CONTENTS"
@@ -64,12 +62,12 @@ for folder_name in os.listdir(dir_path):
           pass
         # Count the number of files in the folder
         file_count = len(os.listdir(folder_path))
-        count, url = get_info(folder_path)
 
         try:
+            count, url = get_info(folder_path)
           # Check if the actual number of files matches the expected number
             if file_count != count + 1:
-              print(f'Record: {count}; Actual: {file_count}')
+              print(f'Record: {count}; Actual: {file_count-1}')
               raise Exception()
         except:
             handle(folder_path, url)
